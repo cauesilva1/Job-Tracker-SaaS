@@ -63,9 +63,22 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
     console.log('Title match:', titleMatch);
     if (titleMatch) {
-      const title = titleMatch[1].replace(/\s*\|\s*LinkedIn/, '').trim();
-      jobInfo.position = title;
-      console.log('Extracted title:', title);
+      let title = titleMatch[1].replace(/\s*\|\s*LinkedIn/, '').trim();
+      
+      // Limpar o título removendo informações extras
+      // Padrão: "Empresa hiring Cargo in Localização"
+      const titleCleanup = title.match(/^(.+?)\s+hiring\s+(.+?)\s+in\s+(.+)$/i);
+      if (titleCleanup) {
+        jobInfo.company = titleCleanup[1].trim();
+        jobInfo.position = titleCleanup[2].trim();
+        jobInfo.location = titleCleanup[3].trim();
+        console.log('Cleaned title - Company:', jobInfo.company);
+        console.log('Cleaned title - Position:', jobInfo.position);
+        console.log('Cleaned title - Location:', jobInfo.location);
+      } else {
+        jobInfo.position = title;
+        console.log('Extracted title (not cleaned):', title);
+      }
     }
     
     // Extrair empresa (procurar por padrões comuns)
@@ -73,7 +86,9 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
       /"companyName":"([^"]+)"/,
       /"hiringOrganization":\s*{\s*"name":\s*"([^"]+)"/,
       /<span[^>]*class="[^"]*company[^"]*"[^>]*>([^<]+)<\/span>/i,
-      /<div[^>]*class="[^"]*company[^"]*"[^>]*>([^<]+)<\/div>/i
+      /<div[^>]*class="[^"]*company[^"]*"[^>]*>([^<]+)<\/div>/i,
+      /<a[^>]*class="[^"]*company[^"]*"[^>]*>([^<]+)<\/a>/i,
+      /<span[^>]*class="[^"]*job-details-jobs-unified-top-card__company-name[^"]*"[^>]*>([^<]+)<\/span>/i
     ];
     
     console.log('Searching for company patterns...');
@@ -113,7 +128,9 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
     const descriptionPatterns = [
       /"description":"([^"]+)"/,
       /<div[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
-      /<section[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/section>/i
+      /<section[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/section>/i,
+      /<div[^>]*class="[^"]*job-description[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+      /<div[^>]*class="[^"]*show-more-less-html[^"]*"[^>]*>([\s\S]*?)<\/div>/i
     ];
     
     console.log('Searching for description patterns...');
@@ -132,13 +149,27 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
           .replace(/&quot;/g, '"')
           .trim();
         
-        // Limitar descrição a 500 caracteres
-        if (description.length > 500) {
-          description = description.substring(0, 500) + '...';
+        // Extrair apenas as seções "Key Responsibilities" e "About You"
+        const keyResponsibilitiesMatch = description.match(/Key Responsibilities\s*([\s\S]*?)(?=About You|$)/i);
+        const aboutYouMatch = description.match(/About You\s*([\s\S]*?)(?=About the Company|$)/i);
+        
+        let extractedContent = '';
+        
+        if (keyResponsibilitiesMatch) {
+          extractedContent += 'Key Responsibilities\n' + keyResponsibilitiesMatch[1].trim() + '\n\n';
         }
         
-        jobInfo.description = description;
-        console.log('Extracted description (first 100 chars):', description.substring(0, 100));
+        if (aboutYouMatch) {
+          extractedContent += 'About You\n' + aboutYouMatch[1].trim();
+        }
+        
+        // Se não encontrou as seções específicas, usar a descrição completa
+        if (!extractedContent.trim()) {
+          extractedContent = description;
+        }
+        
+        jobInfo.description = extractedContent.trim();
+        console.log('Extracted specific sections:', extractedContent.substring(0, 200));
         break;
       }
     }
