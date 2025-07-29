@@ -35,7 +35,8 @@ export async function extractJobInfo(url: string): Promise<JobInfo> {
 
 async function extractLinkedInJob(url: string): Promise<JobInfo> {
   try {
-    console.log('Extraindo informações do LinkedIn:', url);
+    console.log('=== LINKEDIN EXTRACTION DEBUG ===');
+    console.log('URL:', url);
     
     // Fazer requisição para a página do LinkedIn
     const response = await fetch(url, {
@@ -44,20 +45,27 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
       }
     });
     
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const html = await response.text();
+    console.log('HTML length:', html.length);
+    console.log('First 500 chars of HTML:', html.substring(0, 500));
     
     // Extrair informações usando regex
     const jobInfo: JobInfo = {};
     
     // Extrair título da vaga
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    console.log('Title match:', titleMatch);
     if (titleMatch) {
       const title = titleMatch[1].replace(/\s*\|\s*LinkedIn/, '').trim();
       jobInfo.position = title;
+      console.log('Extracted title:', title);
     }
     
     // Extrair empresa (procurar por padrões comuns)
@@ -68,10 +76,15 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
       /<div[^>]*class="[^"]*company[^"]*"[^>]*>([^<]+)<\/div>/i
     ];
     
-    for (const pattern of companyPatterns) {
+    console.log('Searching for company patterns...');
+    for (let i = 0; i < companyPatterns.length; i++) {
+      const pattern = companyPatterns[i];
       const match = html.match(pattern);
+      console.log(`Company pattern ${i + 1}:`, pattern.source);
+      console.log(`Company match ${i + 1}:`, match);
       if (match) {
         jobInfo.company = match[1].trim();
+        console.log('Extracted company:', jobInfo.company);
         break;
       }
     }
@@ -83,10 +96,15 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
       /<div[^>]*class="[^"]*location[^"]*"[^>]*>([^<]+)<\/div>/i
     ];
     
-    for (const pattern of locationPatterns) {
+    console.log('Searching for location patterns...');
+    for (let i = 0; i < locationPatterns.length; i++) {
+      const pattern = locationPatterns[i];
       const match = html.match(pattern);
+      console.log(`Location pattern ${i + 1}:`, pattern.source);
+      console.log(`Location match ${i + 1}:`, match);
       if (match) {
         jobInfo.location = match[1].trim();
+        console.log('Extracted location:', jobInfo.location);
         break;
       }
     }
@@ -98,8 +116,12 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
       /<section[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/section>/i
     ];
     
-    for (const pattern of descriptionPatterns) {
+    console.log('Searching for description patterns...');
+    for (let i = 0; i < descriptionPatterns.length; i++) {
+      const pattern = descriptionPatterns[i];
       const match = html.match(pattern);
+      console.log(`Description pattern ${i + 1}:`, pattern.source);
+      console.log(`Description match ${i + 1}:`, match ? 'Found' : 'Not found');
       if (match) {
         let description = match[1]
           .replace(/<[^>]*>/g, '') // Remove HTML tags
@@ -116,12 +138,14 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
         }
         
         jobInfo.description = description;
+        console.log('Extracted description (first 100 chars):', description.substring(0, 100));
         break;
       }
     }
     
     // Se não conseguiu extrair informações básicas, usar fallback
     if (!jobInfo.position && !jobInfo.company) {
+      console.log('No basic info extracted, using fallback');
       // Tentar extrair da URL
       const urlParts = url.split('/');
       const jobId = urlParts[urlParts.length - 1];
@@ -134,7 +158,8 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
       };
     }
     
-    console.log('Informações extraídas:', jobInfo);
+    console.log('=== FINAL EXTRACTED INFO ===');
+    console.log('Job Info:', JSON.stringify(jobInfo, null, 2));
     return jobInfo;
     
   } catch (error) {

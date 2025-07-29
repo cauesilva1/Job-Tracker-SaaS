@@ -16,7 +16,8 @@ export async function POST(request: NextRequest) {
     
     const jobInfo = await extractJobInfo(url);
     
-    console.log('API: Informações extraídas:', jobInfo);
+    console.log('=== API RESPONSE DEBUG ===');
+    console.log('API: Informações extraídas:', JSON.stringify(jobInfo, null, 2));
     
     return NextResponse.json(jobInfo);
     
