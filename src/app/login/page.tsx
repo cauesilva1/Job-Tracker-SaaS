@@ -41,7 +41,8 @@ export default function LoginPage() {
         toast.error("Erro no login: " + error.message)
       } else {
         toast.success("Login realizado com sucesso!")
-        // O redirecionamento será feito automaticamente pelo middleware/useEffect
+        // Redirecionamento manual para garantir
+        window.location.href = '/'
       }
     } catch (err) {
       console.error("Erro inesperado:", err)

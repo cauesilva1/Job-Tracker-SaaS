@@ -6,10 +6,7 @@ import { Button } from "@/components/ui/button";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import toast from "react-hot-toast";
 import type { Application } from "@/types/aplications";
-import type { Status } from "@/types/status";
 import Modal from "@/components/ui/Modal";
-
-
 
 interface DashboardClientProps {
   initialApplications: Application[];
@@ -32,8 +29,6 @@ export default function DashboardClient({ initialApplications }: DashboardClient
     return matchesSearch && matchesStatus;
   });
 
-
-
   const handleDelete = async (appId: string) => {
     if (confirm("Tem certeza que deseja excluir esta candidatura?")) {
       const { error } = await supabase
@@ -51,60 +46,90 @@ export default function DashboardClient({ initialApplications }: DashboardClient
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Applied":
+        return "bg-yellow-100 text-yellow-800";
+      case "Interview":
+        return "bg-blue-100 text-blue-800";
+      case "Offer":
+        return "bg-green-100 text-green-800";
+      case "Rejected":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "Applied":
+        return "📝";
+      case "Interview":
+        return "🎯";
+      case "Offer":
+        return "🎉";
+      case "Rejected":
+        return "❌";
+      default:
+        return "📄";
+    }
+  };
+
   return (
-    <main className="flex-1 p-6 max-w-7xl mx-auto h-screen flex flex-col">
+    <main className="flex-1 p-4 md:p-6 max-w-7xl mx-auto h-screen flex flex-col">
       {/* Header compacto */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-900 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text mb-4">
           Dashboard
         </h1>
         
         {/* Cards de estatísticas compactos */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-3 text-white shadow-md">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-4">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-2 md:p-3 text-white shadow-md">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-100 text-xs font-medium">Total</p>
-                <p className="text-xl font-bold">{applications.length}</p>
+                <p className="text-lg md:text-xl font-bold">{applications.length}</p>
               </div>
-              <div className="w-8 h-8 bg-blue-400/20 rounded-lg flex items-center justify-center">
-                <span className="text-lg">📊</span>
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-blue-400/20 rounded-lg flex items-center justify-center">
+                <span className="text-sm md:text-lg">📊</span>
               </div>
             </div>
           </div>
           
-          <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg p-3 text-white shadow-md">
+          <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg p-2 md:p-3 text-white shadow-md">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-yellow-100 text-xs font-medium">Aplicadas</p>
-                <p className="text-xl font-bold">{applications.filter(a => a.status === "Applied").length}</p>
+                <p className="text-lg md:text-xl font-bold">{applications.filter(a => a.status === "Applied").length}</p>
               </div>
-              <div className="w-8 h-8 bg-yellow-400/20 rounded-lg flex items-center justify-center">
-                <span className="text-lg">📝</span>
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-yellow-400/20 rounded-lg flex items-center justify-center">
+                <span className="text-sm md:text-lg">📝</span>
               </div>
             </div>
           </div>
           
-          <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg p-3 text-white shadow-md">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg p-2 md:p-3 text-white shadow-md">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-100 text-xs font-medium">Entrevistas</p>
-                <p className="text-xl font-bold">{applications.filter(a => a.status === "Interview").length}</p>
+                <p className="text-lg md:text-xl font-bold">{applications.filter(a => a.status === "Interview").length}</p>
               </div>
-              <div className="w-8 h-8 bg-green-400/20 rounded-lg flex items-center justify-center">
-                <span className="text-lg">🎯</span>
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-green-400/20 rounded-lg flex items-center justify-center">
+                <span className="text-sm md:text-lg">🎯</span>
               </div>
             </div>
           </div>
           
-          <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-3 text-white shadow-md">
+          <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-2 md:p-3 text-white shadow-md">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-100 text-xs font-medium">Ofertas</p>
-                <p className="text-xl font-bold">{applications.filter(a => a.status === "Offer").length}</p>
+                <p className="text-lg md:text-xl font-bold">{applications.filter(a => a.status === "Offer").length}</p>
               </div>
-              <div className="w-8 h-8 bg-purple-400/20 rounded-lg flex items-center justify-center">
-                <span className="text-lg">🎉</span>
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-purple-400/20 rounded-lg flex items-center justify-center">
+                <span className="text-sm md:text-lg">🎉</span>
               </div>
             </div>
           </div>
@@ -112,7 +137,7 @@ export default function DashboardClient({ initialApplications }: DashboardClient
       </div>
 
       {/* Barra de busca e filtro compacta */}
-      <div className="bg-white rounded-xl shadow-md border border-gray-100 p-4 mb-4">
+      <div className="bg-white rounded-xl shadow-md border border-gray-100 p-3 md:p-4 mb-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div className="flex-1 relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -132,7 +157,7 @@ export default function DashboardClient({ initialApplications }: DashboardClient
 
           <select
             aria-label="Filtrar por status"
-            className="w-40 px-3 py-2 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white text-sm"
+            className="w-full md:w-40 px-3 py-2 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white text-sm"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -183,9 +208,9 @@ export default function DashboardClient({ initialApplications }: DashboardClient
           </div>
         </div>
       ) : (
-                <div className="flex-1">
-          {/* Tabela com scroll */}
-          <div className="bg-white rounded-xl shadow-md border border-gray-100 h-full flex flex-col">
+        <div className="flex-1">
+          {/* Desktop: Tabela */}
+          <div className="hidden md:block bg-white rounded-xl shadow-md border border-gray-100 h-full flex flex-col">
             <div className="px-6 py-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-100">
               <h2 className="text-lg font-semibold text-gray-900">Candidaturas Recentes</h2>
             </div>
@@ -215,94 +240,145 @@ export default function DashboardClient({ initialApplications }: DashboardClient
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
                   {filteredApplications.map((app) => (
-                    <React.Fragment key={app.id}>
-                      <tr className="hover:bg-gray-50 transition-colors duration-200">
-                        <td className="px-6 py-4">
-                          <div>
-                            <div className="text-sm font-semibold text-gray-900">{app.company}</div>
-                            {app.link && (
-                              <a
-                                href={app.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors"
-                              >
-                                Ver vaga →
-                              </a>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900 font-medium">{app.position}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
-                              app.status === "Applied"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : app.status === "Interview"
-                                ? "bg-blue-100 text-blue-800"
-                                : app.status === "Offer"
-                                ? "bg-green-100 text-green-800"
-                                : app.status === "Rejected"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-gray-100 text-gray-800"
-                            }`}
-                          >
-                            {app.status === "Applied" && "📝"}
-                            {app.status === "Interview" && "🎯"}
-                            {app.status === "Offer" && "🎉"}
-                            {app.status === "Rejected" && "❌"}
-                            {" "}{app.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          {app.notes ? (
-                            <button
-                              onClick={() => {
-                                setSelectedNotes({
-                                  notes: app.notes!,
-                                  company: app.company,
-                                  position: app.position
-                                });
-                                setIsModalOpen(true);
-                              }}
-                              className="text-xs text-gray-600 hover:text-gray-800 cursor-pointer transition-colors"
+                    <tr key={app.id} className="hover:bg-gray-50 transition-colors duration-200">
+                      <td className="px-6 py-4">
+                        <div>
+                          <div className="text-sm font-semibold text-gray-900">{app.company}</div>
+                          {app.link && (
+                            <a
+                              href={app.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors"
                             >
-                              📝 Ver notas
-                            </button>
-                          ) : (
-                            <span className="text-xs text-gray-400">Sem notas</span>
+                              Ver vaga →
+                            </a>
                           )}
-                        </td>
-                        <td className="px-6 py-4 text-xs text-gray-600">
-                          {new Date(app.created_at).toLocaleDateString("pt-BR", {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                          })}
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <Link href={`/edit/${app.id}`}>
-                              <button className="text-indigo-600 hover:text-indigo-800 font-medium text-xs transition-colors cursor-pointer">
-                                ✏️ Editar
-                              </button>
-                            </Link>
-                            <button
-                              onClick={() => handleDelete(app.id)}
-                              className="text-red-600 hover:text-red-800 font-medium text-xs transition-colors cursor-pointer"
-                            >
-                              🗑️ Excluir
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900 font-medium">{app.position}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(app.status)}`}>
+                          {getStatusIcon(app.status)} {app.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {app.notes ? (
+                          <button
+                            onClick={() => {
+                              setSelectedNotes({
+                                notes: app.notes!,
+                                company: app.company,
+                                position: app.position
+                              });
+                              setIsModalOpen(true);
+                            }}
+                            className="text-xs text-gray-600 hover:text-gray-800 cursor-pointer transition-colors"
+                          >
+                            📝 Ver notas
+                          </button>
+                        ) : (
+                          <span className="text-xs text-gray-400">Sem notas</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-xs text-gray-600">
+                        {new Date(app.created_at).toLocaleDateString("pt-BR", {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric'
+                        })}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <Link href={`/edit/${app.id}`}>
+                            <button className="text-indigo-600 hover:text-indigo-800 font-medium text-xs transition-colors cursor-pointer">
+                              ✏️ Editar
                             </button>
-                          </div>
-                        </td>
-                      </tr>
-                    </React.Fragment>
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(app.id)}
+                            className="text-red-600 hover:text-red-800 font-medium text-xs transition-colors cursor-pointer"
+                          >
+                            🗑️ Excluir
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Mobile: Cards */}
+          <div className="md:hidden space-y-3">
+            {filteredApplications.map((app) => (
+              <div key={app.id} className="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-sm">{app.company}</h3>
+                    <p className="text-gray-600 text-sm">{app.position}</p>
+                  </div>
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(app.status)}`}>
+                    {getStatusIcon(app.status)} {app.status}
+                  </span>
+                </div>
+                
+                <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+                  <span>
+                    {new Date(app.created_at).toLocaleDateString("pt-BR", {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })}
+                  </span>
+                  {app.link && (
+                    <a
+                      href={app.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-indigo-600 hover:text-indigo-800 transition-colors"
+                    >
+                      Ver vaga →
+                    </a>
+                  )}
+                </div>
+
+                {app.notes && (
+                  <div className="mb-3">
+                    <button
+                      onClick={() => {
+                        setSelectedNotes({
+                          notes: app.notes!,
+                          company: app.company,
+                          position: app.position
+                        });
+                        setIsModalOpen(true);
+                      }}
+                      className="text-xs text-gray-600 hover:text-gray-800 cursor-pointer transition-colors"
+                    >
+                      📝 Ver notas
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-2 border-t border-gray-100">
+                  <Link href={`/edit/${app.id}`} className="flex-1">
+                    <button className="w-full text-indigo-600 hover:text-indigo-800 font-medium text-xs transition-colors cursor-pointer py-2 px-3 border border-indigo-200 rounded-lg hover:bg-indigo-50">
+                      ✏️ Editar
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(app.id)}
+                    className="flex-1 text-red-600 hover:text-red-800 font-medium text-xs transition-colors cursor-pointer py-2 px-3 border border-red-200 rounded-lg hover:bg-red-50"
+                  >
+                    🗑️ Excluir
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

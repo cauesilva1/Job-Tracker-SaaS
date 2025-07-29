@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { isValidJobUrl } from "@/lib/job-scraper";
+import type { Status } from "@/types/status";
 
 interface AddJobFormProps {
   userId: string;
@@ -34,7 +35,7 @@ export default function AddJobForm({ userId }: AddJobFormProps) {
         user_id: userId,
         company: formData.company.trim(),
         position: formData.position.trim(),
-        status: formData.status,
+        status: formData.status as Status,
         link: formData.link.trim() || null,
         notes: formData.notes.trim() || null,
       });
@@ -118,7 +119,7 @@ export default function AddJobForm({ userId }: AddJobFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
       {/* Empresa */}
       <div>
         <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
@@ -131,7 +132,7 @@ export default function AddJobForm({ userId }: AddJobFormProps) {
           value={formData.company}
           onChange={handleInputChange}
           required
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+          className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg md:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm md:text-base"
           placeholder="Ex: Google, Microsoft, Apple..."
         />
       </div>
@@ -148,7 +149,7 @@ export default function AddJobForm({ userId }: AddJobFormProps) {
           value={formData.position}
           onChange={handleInputChange}
           required
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+          className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg md:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm md:text-base"
           placeholder="Ex: Desenvolvedor Frontend, Product Manager..."
         />
       </div>
@@ -163,7 +164,7 @@ export default function AddJobForm({ userId }: AddJobFormProps) {
           name="status"
           value={formData.status}
           onChange={handleInputChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+          className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg md:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm md:text-base"
         >
           <option value="Applied">📝 Applied</option>
           <option value="Interview">🎯 Interview</option>
@@ -177,24 +178,24 @@ export default function AddJobForm({ userId }: AddJobFormProps) {
         <label htmlFor="link" className="block text-sm font-medium text-gray-700 mb-2">
           Link da Vaga (opcional)
         </label>
-        <div className="flex gap-2">
+        <div className="space-y-2">
           <input
             type="url"
             id="link"
             name="link"
             value={formData.link}
             onChange={handleInputChange}
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+            className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg md:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm md:text-base"
             placeholder="https://linkedin.com/jobs/..."
           />
           <Button
             type="button"
             onClick={handleExtractJobInfo}
             disabled={extracting || !formData.link.trim()}
-            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-md transition disabled:opacity-50"
+            className="w-full md:w-auto px-4 md:px-6 py-2 md:py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg md:rounded-md transition disabled:opacity-50 text-sm md:text-base"
           >
             {extracting ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2">
                 <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                   <circle
                     className="opacity-25"
@@ -213,7 +214,7 @@ export default function AddJobForm({ userId }: AddJobFormProps) {
                 Extraindo...
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2">
                 <span>🔍</span>
                 Extrair Info
               </div>
@@ -236,20 +237,20 @@ export default function AddJobForm({ userId }: AddJobFormProps) {
           value={formData.notes}
           onChange={handleInputChange}
           rows={4}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+          className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-lg md:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 text-sm md:text-base"
           placeholder="Observações sobre a candidatura, requisitos, salário, etc..."
         />
       </div>
 
       {/* Botões */}
-      <div className="flex gap-4 pt-6">
+      <div className="flex flex-col md:flex-row gap-3 md:gap-4 pt-4 md:pt-6">
         <Button
           type="submit"
           disabled={loading}
-          className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl py-3 font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+          className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg md:rounded-xl py-2 md:py-3 font-semibold transition-all duration-200 shadow-lg hover:shadow-xl text-sm md:text-base"
         >
           {loading ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                 <circle
                   className="opacity-25"
@@ -268,18 +269,18 @@ export default function AddJobForm({ userId }: AddJobFormProps) {
               Adicionando...
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <span>➕</span>
               Adicionar Candidatura
             </div>
           )}
         </Button>
         
-        <Link href="/">
+        <Link href="/" className="flex-1">
           <Button
             type="button"
             variant="outline"
-            className="flex-1"
+            className="w-full"
           >
             Cancelar
           </Button>

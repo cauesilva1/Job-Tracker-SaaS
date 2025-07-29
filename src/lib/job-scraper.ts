@@ -16,12 +16,12 @@ export async function extractJobInfo(url: string): Promise<JobInfo> {
     
     // Para Indeed
     if (url.includes('indeed.com')) {
-      return await extractIndeedJob(url);
+      return await extractIndeedJob();
     }
     
     // Para Glassdoor
     if (url.includes('glassdoor.com')) {
-      return await extractGlassdoorJob(url);
+      return await extractGlassdoorJob();
     }
     
     // Para sites genéricos
@@ -41,7 +41,12 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
     // Fazer requisição para a página do LinkedIn
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
       }
     });
     
@@ -55,6 +60,19 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
     const html = await response.text();
     console.log('HTML length:', html.length);
     console.log('First 500 chars of HTML:', html.substring(0, 500));
+    
+    // Verificar se a vaga está fechada
+    if (html.includes('No longer accepting applications') || 
+        html.includes('This job is no longer accepting applications') ||
+        html.includes('Vaga não está mais aceitando candidaturas')) {
+      console.log('Vaga fechada detectada');
+      return {
+        company: 'Empresa não identificada',
+        position: 'Vaga Fechada - LinkedIn',
+        description: 'Esta vaga não está mais aceitando candidaturas. As informações podem estar incompletas.',
+        location: 'Localização não identificada'
+      };
+    }
     
     // Extrair informações usando regex
     const jobInfo: JobInfo = {};
@@ -88,7 +106,10 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
       /<span[^>]*class="[^"]*company[^"]*"[^>]*>([^<]+)<\/span>/i,
       /<div[^>]*class="[^"]*company[^"]*"[^>]*>([^<]+)<\/div>/i,
       /<a[^>]*class="[^"]*company[^"]*"[^>]*>([^<]+)<\/a>/i,
-      /<span[^>]*class="[^"]*job-details-jobs-unified-top-card__company-name[^"]*"[^>]*>([^<]+)<\/span>/i
+      /<span[^>]*class="[^"]*job-details-jobs-unified-top-card__company-name[^"]*"[^>]*>([^<]+)<\/span>/i,
+      /<span[^>]*class="[^"]*jobs-unified-top-card__company-name[^"]*"[^>]*>([^<]+)<\/span>/i,
+      /<a[^>]*class="[^"]*jobs-unified-top-card__company-name[^"]*"[^>]*>([^<]+)<\/a>/i,
+      /<div[^>]*class="[^"]*jobs-unified-top-card__company-name[^"]*"[^>]*>([^<]+)<\/div>/i
     ];
     
     console.log('Searching for company patterns...');
@@ -108,7 +129,9 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
     const locationPatterns = [
       /"jobLocation":\s*{\s*"addressLocality":\s*"([^"]+)"/,
       /<span[^>]*class="[^"]*location[^"]*"[^>]*>([^<]+)<\/span>/i,
-      /<div[^>]*class="[^"]*location[^"]*"[^>]*>([^<]+)<\/div>/i
+      /<div[^>]*class="[^"]*location[^"]*"[^>]*>([^<]+)<\/div>/i,
+      /<span[^>]*class="[^"]*jobs-unified-top-card__bullet[^"]*"[^>]*>([^<]+)<\/span>/i,
+      /<span[^>]*class="[^"]*jobs-unified-top-card__location[^"]*"[^>]*>([^<]+)<\/span>/i
     ];
     
     console.log('Searching for location patterns...');
@@ -130,7 +153,9 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
       /<div[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
       /<section[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/section>/i,
       /<div[^>]*class="[^"]*job-description[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
-      /<div[^>]*class="[^"]*show-more-less-html[^"]*"[^>]*>([\s\S]*?)<\/div>/i
+      /<div[^>]*class="[^"]*show-more-less-html[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+      /<div[^>]*class="[^"]*jobs-description[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+      /<div[^>]*class="[^"]*jobs-box__html-content[^"]*"[^>]*>([\s\S]*?)<\/div>/i
     ];
     
     console.log('Searching for description patterns...');
@@ -147,6 +172,8 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
           .replace(/&lt;/g, '<')
           .replace(/&gt;/g, '>')
           .replace(/&quot;/g, '"')
+          .replace(/&apos;/g, "'")
+          .replace(/\s+/g, ' ') // Normaliza espaços
           .trim();
         
         // Extrair apenas as seções "Key Responsibilities" e "About You"
@@ -177,10 +204,6 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
     // Se não conseguiu extrair informações básicas, usar fallback
     if (!jobInfo.position && !jobInfo.company) {
       console.log('No basic info extracted, using fallback');
-      // Tentar extrair da URL
-      const urlParts = url.split('/');
-      // const jobId = urlParts[urlParts.length - 1]; // Para uso futuro
-      
       return {
         company: 'Empresa não identificada',
         position: 'Vaga do LinkedIn',
@@ -196,10 +219,6 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
   } catch (error) {
     console.error('Erro ao extrair do LinkedIn:', error);
     
-    // Fallback com informações da URL
-    const urlParts = url.split('/');
-    // const jobId = urlParts[urlParts.length - 1]; // Para uso futuro
-    
     return {
       company: 'Empresa não identificada',
       position: 'Vaga do LinkedIn',
@@ -209,7 +228,7 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
   }
 }
 
-async function extractIndeedJob(_url: string): Promise<JobInfo> {
+async function extractIndeedJob(): Promise<JobInfo> {
   try {
     // Simulação de extração do Indeed
     return {
@@ -224,7 +243,7 @@ async function extractIndeedJob(_url: string): Promise<JobInfo> {
   }
 }
 
-async function extractGlassdoorJob(_url: string): Promise<JobInfo> {
+async function extractGlassdoorJob(): Promise<JobInfo> {
   try {
     // Simulação de extração do Glassdoor
     return {
