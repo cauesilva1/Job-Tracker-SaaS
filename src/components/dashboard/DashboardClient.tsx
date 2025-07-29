@@ -8,20 +8,8 @@ import toast from "react-hot-toast";
 import type { Application } from "@/types/aplications";
 import type { Status } from "@/types/status";
 import Modal from "@/components/ui/Modal";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
 
-const COLORS: Record<Status, string> = {
-  Applied: "#facc15",
-  Interview: "#3b82f6",
-  Offer: "#22c55e",
-  Rejected: "#ef4444",
-};
+
 
 interface DashboardClientProps {
   initialApplications: Application[];
@@ -44,18 +32,7 @@ export default function DashboardClient({ initialApplications }: DashboardClient
     return matchesSearch && matchesStatus;
   });
 
-  // Contagem por status para gráfico
-  const statusCounts = filteredApplications.reduce((acc, app) => {
-    acc[app.status] = (acc[app.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
 
-  const pieData: { name: Status; value: number }[] = Object.entries(
-    statusCounts
-  ).map(([status, value]) => ({
-    name: status as Status,
-    value,
-  }));
 
   const handleDelete = async (appId: string) => {
     if (confirm("Tem certeza que deseja excluir esta candidatura?")) {
@@ -206,186 +183,125 @@ export default function DashboardClient({ initialApplications }: DashboardClient
           </div>
         </div>
       ) : (
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 min-h-0">
+                <div className="flex-1">
           {/* Tabela com scroll */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 h-full flex flex-col">
-              <div className="px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-100">
-                <h2 className="text-sm font-semibold text-gray-900">Candidaturas Recentes</h2>
-              </div>
-              <div className="flex-1 overflow-y-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50 sticky top-0 z-10">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Empresa
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Cargo
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Notas
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Data
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Ações
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-100">
-                    {filteredApplications.map((app) => (
-                                            <React.Fragment key={app.id}>
-                        <tr className="hover:bg-gray-50 transition-colors duration-200">
-                          <td className="px-6 py-4">
-                            <div>
-                              <div className="text-sm font-semibold text-gray-900">{app.company}</div>
-                              {app.link && (
-                                <a
-                                  href={app.link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-xs text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors"
-                                >
-                                  Ver vaga →
-                                </a>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="text-sm text-gray-900 font-medium">{app.position}</div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
-                                app.status === "Applied"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : app.status === "Interview"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : app.status === "Offer"
-                                  ? "bg-green-100 text-green-800"
-                                  : app.status === "Rejected"
-                                  ? "bg-red-100 text-red-800"
-                                  : "bg-gray-100 text-gray-800"
-                              }`}
-                            >
-                              {app.status === "Applied" && "📝"}
-                              {app.status === "Interview" && "🎯"}
-                              {app.status === "Offer" && "🎉"}
-                              {app.status === "Rejected" && "❌"}
-                              {" "}{app.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            {app.notes ? (
-                              <button
-                                onClick={() => {
-                                  setSelectedNotes({
-                                    notes: app.notes!,
-                                    company: app.company,
-                                    position: app.position
-                                  });
-                                  setIsModalOpen(true);
-                                }}
-                                className="text-xs text-gray-600 hover:text-gray-800 cursor-pointer transition-colors"
-                              >
-                                📝 Ver notas
-                              </button>
-                            ) : (
-                              <span className="text-xs text-gray-400">Sem notas</span>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 text-xs text-gray-600">
-                            {new Date(app.created_at).toLocaleDateString("pt-BR", {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric'
-                            })}
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <Link href={`/edit/${app.id}`}>
-                                <button className="text-indigo-600 hover:text-indigo-800 font-medium text-xs transition-colors cursor-pointer">
-                                  ✏️ Editar
-                                </button>
-                              </Link>
-                              <button
-                                onClick={() => handleDelete(app.id)}
-                                className="text-red-600 hover:text-red-800 font-medium text-xs transition-colors cursor-pointer"
-                              >
-                                🗑️ Excluir
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      </React.Fragment>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+          <div className="bg-white rounded-xl shadow-md border border-gray-100 h-full flex flex-col">
+            <div className="px-6 py-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900">Candidaturas Recentes</h2>
             </div>
-          </div>
-
-          {/* Gráfico compacto */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 p-4 h-full">
-              <h2 className="text-sm font-semibold mb-4 text-gray-900 flex items-center">
-                <span className="mr-2">📊</span>
-                Distribuição
-              </h2>
-              {pieData.length > 0 ? (
-                <div className="space-y-3">
-                  <ResponsiveContainer width="100%" height={150}>
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={50}
-                        innerRadius={20}
-                      >
-                        {pieData.map((entry) => (
-                          <Cell
-                            key={entry.name}
-                            fill={COLORS[entry.name] || "#8884d8"}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        formatter={(value: number) => [value, 'Candidaturas']}
-                        labelFormatter={(label: string) => `${label}`}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  
-                  {/* Legendas compactas */}
-                  <div className="space-y-1">
-                    {pieData.map((entry) => (
-                      <div key={entry.name} className="flex items-center justify-between text-xs">
-                        <div className="flex items-center">
-                          <div 
-                            className="w-2 h-2 rounded-full mr-2"
-                            style={{ backgroundColor: COLORS[entry.name] }}
-                          />
-                          <span className="text-gray-700">{entry.name}</span>
-                        </div>
-                        <span className="font-semibold text-gray-900">{entry.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <div className="text-2xl mb-1">📊</div>
-                  <p className="text-gray-500 text-xs">Sem dados</p>
-                </div>
-              )}
+            <div className="flex-1 overflow-y-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50 sticky top-0 z-10">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Empresa
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Cargo
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Notas
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Data
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-100">
+                  {filteredApplications.map((app) => (
+                    <React.Fragment key={app.id}>
+                      <tr className="hover:bg-gray-50 transition-colors duration-200">
+                        <td className="px-6 py-4">
+                          <div>
+                            <div className="text-sm font-semibold text-gray-900">{app.company}</div>
+                            {app.link && (
+                              <a
+                                href={app.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors"
+                              >
+                                Ver vaga →
+                              </a>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-gray-900 font-medium">{app.position}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                              app.status === "Applied"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : app.status === "Interview"
+                                ? "bg-blue-100 text-blue-800"
+                                : app.status === "Offer"
+                                ? "bg-green-100 text-green-800"
+                                : app.status === "Rejected"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {app.status === "Applied" && "📝"}
+                            {app.status === "Interview" && "🎯"}
+                            {app.status === "Offer" && "🎉"}
+                            {app.status === "Rejected" && "❌"}
+                            {" "}{app.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          {app.notes ? (
+                            <button
+                              onClick={() => {
+                                setSelectedNotes({
+                                  notes: app.notes!,
+                                  company: app.company,
+                                  position: app.position
+                                });
+                                setIsModalOpen(true);
+                              }}
+                              className="text-xs text-gray-600 hover:text-gray-800 cursor-pointer transition-colors"
+                            >
+                              📝 Ver notas
+                            </button>
+                          ) : (
+                            <span className="text-xs text-gray-400">Sem notas</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-xs text-gray-600">
+                          {new Date(app.created_at).toLocaleDateString("pt-BR", {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          })}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <Link href={`/edit/${app.id}`}>
+                              <button className="text-indigo-600 hover:text-indigo-800 font-medium text-xs transition-colors cursor-pointer">
+                                ✏️ Editar
+                              </button>
+                            </Link>
+                            <button
+                              onClick={() => handleDelete(app.id)}
+                              className="text-red-600 hover:text-red-800 font-medium text-xs transition-colors cursor-pointer"
+                            >
+                              🗑️ Excluir
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -398,8 +314,10 @@ export default function DashboardClient({ initialApplications }: DashboardClient
         title={selectedNotes ? `${selectedNotes.company} - ${selectedNotes.position}` : "Notas da Vaga"}
       >
         {selectedNotes && (
-          <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-            {selectedNotes.notes}
+          <div className="bg-gray-50 rounded-xl p-6">
+            <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+              {selectedNotes.notes}
+            </div>
           </div>
         )}
       </Modal>

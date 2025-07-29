@@ -36,35 +36,27 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl">
+                <div className="absolute right-4 top-4 z-10">
                   <button
                     type="button"
-                    className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    className="rounded-full bg-gray-100 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     onClick={onClose}
                   >
                     <span className="sr-only">Fechar</span>
-                    <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                    <XMarkIcon className="h-5 w-5" aria-hidden="true" />
                   </button>
                 </div>
-                <div className="sm:flex sm:items-start">
-                  <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                    <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900 mb-4">
+                <div className="px-8 py-6">
+                  <div className="mb-6">
+                    <Dialog.Title as="h3" className="text-xl font-bold text-gray-900 mb-2">
                       {title}
                     </Dialog.Title>
-                    <div className="mt-2">
-                      {children}
-                    </div>
+                    <div className="w-16 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full"></div>
                   </div>
-                </div>
-                <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                  <button
-                    type="button"
-                    className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
-                    onClick={onClose}
-                  >
-                    Fechar
-                  </button>
+                  <div className="max-h-96 overflow-y-auto">
+                    {children}
+                  </div>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
