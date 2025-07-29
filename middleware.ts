@@ -22,8 +22,10 @@ export async function middleware(req: NextRequest) {
     req.nextUrl.pathname.startsWith(route)
   )
 
-  // Pular middleware para rotas de callback OAuth
-  if (req.nextUrl.pathname.startsWith('/auth/callback') || req.nextUrl.pathname.startsWith('/auth/google')) {
+  // Pular middleware para rotas de callback OAuth e debug
+  if (req.nextUrl.pathname.startsWith('/auth/callback') || 
+      req.nextUrl.pathname.startsWith('/auth/google') ||
+      req.nextUrl.pathname.startsWith('/debug')) {
     return res
   }
 
