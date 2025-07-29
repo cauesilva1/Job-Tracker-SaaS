@@ -9,17 +9,16 @@ export async function GET(request: Request) {
   const errorDescription = requestUrl.searchParams.get('error_description')
   const state = requestUrl.searchParams.get('state')
 
-  console.log('Auth callback URL:', requestUrl.toString())
-  console.log('Auth callback params:', { 
-    code: code ? `${code.substring(0, 10)}...` : null, 
-    error, 
-    errorDescription,
-    state: state ? `${state.substring(0, 10)}...` : null
-  })
+  console.log('=== AUTH CALLBACK DEBUG ===')
+  console.log('Request URL:', requestUrl.toString())
+  console.log('Origin:', requestUrl.origin)
+  console.log('Code received:', !!code)
+  console.log('Error:', error)
+  console.log('Error description:', errorDescription)
+  console.log('State:', state)
 
   if (error) {
     console.error('OAuth error:', error, errorDescription)
-    // Redireciona para login com erro
     const redirectUrl = new URL('/login', requestUrl.origin)
     redirectUrl.searchParams.set('error', error)
     redirectUrl.searchParams.set('error_description', errorDescription || '')
@@ -41,7 +40,13 @@ export async function GET(request: Request) {
         return NextResponse.redirect(redirectUrl)
       }
 
-      console.log('Successfully exchanged code for session:', data)
+      console.log('Successfully exchanged code for session')
+      console.log('Session data:', data)
+      console.log('User ID:', data?.user?.id)
+      console.log('User email:', data?.user?.email)
+      
+      // Aguarda um pouco para garantir que a sessão foi salva
+      await new Promise(resolve => setTimeout(resolve, 1000))
       
     } catch (err) {
       console.error('Unexpected error in auth callback:', err)
@@ -57,6 +62,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(redirectUrl)
   }
 
-  // URL to redirect to after sign in process completes
+  console.log('Redirecting to:', requestUrl.origin)
   return NextResponse.redirect(requestUrl.origin)
 } 

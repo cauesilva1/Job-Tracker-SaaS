@@ -3,11 +3,12 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Sidebar from "@/components/sidebar/Sidebar";
 import DashboardClient from "@/components/dashboard/DashboardClient";
+import AuthDebug from "@/components/AuthDebug";
 
 export default async function DashboardPage() {
   const supabase = createServerComponentClient({ cookies });
   
-  const {
+      const {
     data: { session },
   } = await supabase.auth.getSession();
 
@@ -17,12 +18,12 @@ export default async function DashboardPage() {
 
   // Buscar candidaturas do usuário
   const { data: applications, error } = await supabase
-    .from("applications")
-    .select("*")
+        .from("applications")
+        .select("*")
     .eq("user_id", session.user.id)
-    .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false });
 
-  if (error) {
+      if (error) {
     console.error("Erro ao buscar aplicações:", error);
   }
 
@@ -32,6 +33,7 @@ export default async function DashboardPage() {
       <DashboardClient 
         initialApplications={applications || []} 
       />
+      <AuthDebug />
     </div>
   );
 }
