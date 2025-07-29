@@ -63,7 +63,7 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
     console.log('Title match:', titleMatch);
     if (titleMatch) {
-      let title = titleMatch[1].replace(/\s*\|\s*LinkedIn/, '').trim();
+      const title = titleMatch[1].replace(/\s*\|\s*LinkedIn/, '').trim();
       
       // Limpar o título removendo informações extras
       // Padrão: "Empresa hiring Cargo in Localização"
@@ -140,7 +140,7 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
       console.log(`Description pattern ${i + 1}:`, pattern.source);
       console.log(`Description match ${i + 1}:`, match ? 'Found' : 'Not found');
       if (match) {
-        let description = match[1]
+        const description = match[1]
           .replace(/<[^>]*>/g, '') // Remove HTML tags
           .replace(/&nbsp;/g, ' ')
           .replace(/&amp;/g, '&')
@@ -179,7 +179,7 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
       console.log('No basic info extracted, using fallback');
       // Tentar extrair da URL
       const urlParts = url.split('/');
-      const jobId = urlParts[urlParts.length - 1];
+      // const jobId = urlParts[urlParts.length - 1]; // Para uso futuro
       
       return {
         company: 'Empresa não identificada',
@@ -198,7 +198,7 @@ async function extractLinkedInJob(url: string): Promise<JobInfo> {
     
     // Fallback com informações da URL
     const urlParts = url.split('/');
-    const jobId = urlParts[urlParts.length - 1];
+    // const jobId = urlParts[urlParts.length - 1]; // Para uso futuro
     
     return {
       company: 'Empresa não identificada',
