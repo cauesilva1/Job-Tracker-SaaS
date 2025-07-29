@@ -7,6 +7,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import toast from "react-hot-toast";
 import type { Application } from "@/types/aplications";
 import type { Status } from "@/types/status";
+import Modal from "@/components/ui/Modal";
 import {
   PieChart,
   Pie,
@@ -31,7 +32,8 @@ export default function DashboardClient({ initialApplications }: DashboardClient
   const [applications, setApplications] = useState<Application[]>(initialApplications);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [expandedNotes, setExpandedNotes] = useState<string | null>(null);
+  const [selectedNotes, setSelectedNotes] = useState<{ notes: string; company: string; position: string } | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Filtra candidaturas por busca e status
   const filteredApplications = applications.filter((app) => {
@@ -215,31 +217,31 @@ export default function DashboardClient({ initialApplications }: DashboardClient
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50 sticky top-0 z-10">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Empresa
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Cargo
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Notas
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Data
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Ações
                       </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-100">
                     {filteredApplications.map((app) => (
-                      <React.Fragment key={app.id}>
+                                            <React.Fragment key={app.id}>
                         <tr className="hover:bg-gray-50 transition-colors duration-200">
-                          <td className="px-4 py-3">
+                          <td className="px-6 py-4">
                             <div>
                               <div className="text-sm font-semibold text-gray-900">{app.company}</div>
                               {app.link && (
@@ -254,10 +256,10 @@ export default function DashboardClient({ initialApplications }: DashboardClient
                               )}
                             </div>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-6 py-4">
                             <div className="text-sm text-gray-900 font-medium">{app.position}</div>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-6 py-4">
                             <span
                               className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
                                 app.status === "Applied"
@@ -278,27 +280,34 @@ export default function DashboardClient({ initialApplications }: DashboardClient
                               {" "}{app.status}
                             </span>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-6 py-4">
                             {app.notes ? (
                               <button
-                                onClick={() => setExpandedNotes(expandedNotes === app.id ? null : app.id)}
+                                onClick={() => {
+                                  setSelectedNotes({
+                                    notes: app.notes!,
+                                    company: app.company,
+                                    position: app.position
+                                  });
+                                  setIsModalOpen(true);
+                                }}
                                 className="text-xs text-gray-600 hover:text-gray-800 cursor-pointer transition-colors"
                               >
-                                {expandedNotes === app.id ? "📝 Ocultar notas" : "📝 Ver notas"}
+                                📝 Ver notas
                               </button>
                             ) : (
                               <span className="text-xs text-gray-400">Sem notas</span>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-xs text-gray-600">
+                          <td className="px-6 py-4 text-xs text-gray-600">
                             {new Date(app.created_at).toLocaleDateString("pt-BR", {
                               day: '2-digit',
                               month: '2-digit',
                               year: 'numeric'
                             })}
                           </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
                               <Link href={`/edit/${app.id}`}>
                                 <button className="text-indigo-600 hover:text-indigo-800 font-medium text-xs transition-colors cursor-pointer">
                                   ✏️ Editar
@@ -313,15 +322,6 @@ export default function DashboardClient({ initialApplications }: DashboardClient
                             </div>
                           </td>
                         </tr>
-                        {expandedNotes === app.id && app.notes && (
-                          <tr key={`${app.id}-notes`}>
-                            <td colSpan={6} className="px-4 py-3 bg-gray-50">
-                              <div className="text-sm text-gray-700 whitespace-pre-wrap">
-                                {app.notes}
-                              </div>
-                            </td>
-                          </tr>
-                        )}
                       </React.Fragment>
                     ))}
                   </tbody>
@@ -390,6 +390,19 @@ export default function DashboardClient({ initialApplications }: DashboardClient
           </div>
         </div>
       )}
+
+      {/* Modal para exibir notas */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={selectedNotes ? `${selectedNotes.company} - ${selectedNotes.position}` : "Notas da Vaga"}
+      >
+        {selectedNotes && (
+          <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+            {selectedNotes.notes}
+          </div>
+        )}
+      </Modal>
     </main>
   );
 } 
