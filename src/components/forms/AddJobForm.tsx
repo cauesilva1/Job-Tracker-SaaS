@@ -6,7 +6,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
-import { extractJobInfo, isValidJobUrl } from "@/lib/job-scraper";
+import { isValidJobUrl } from "@/lib/job-scraper";
 
 interface AddJobFormProps {
   userId: string;
@@ -78,7 +78,24 @@ export default function AddJobForm({ userId }: AddJobFormProps) {
 
     setExtracting(true);
     try {
-      const jobInfo = await extractJobInfo(formData.link);
+      // Chamar a API route em vez de usar o scraper diretamente
+      const response = await fetch('/api/extract-job', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: formData.link }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const jobInfo = await response.json();
+      
+      if (jobInfo.error) {
+        throw new Error(jobInfo.error);
+      }
       
       if (jobInfo.company || jobInfo.position) {
         setFormData(prev => ({
