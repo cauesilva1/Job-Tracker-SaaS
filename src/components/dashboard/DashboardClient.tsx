@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -31,6 +31,7 @@ export default function DashboardClient({ initialApplications }: DashboardClient
   const [applications, setApplications] = useState<Application[]>(initialApplications);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [expandedNotes, setExpandedNotes] = useState<string | null>(null);
 
   // Filtra candidaturas por busca e status
   const filteredApplications = applications.filter((app) => {
@@ -224,6 +225,9 @@ export default function DashboardClient({ initialApplications }: DashboardClient
                         Status
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Notas
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Data
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -233,14 +237,9 @@ export default function DashboardClient({ initialApplications }: DashboardClient
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-100">
                     {filteredApplications.map((app) => (
-                      <tr key={app.id} className="hover:bg-gray-50 transition-colors duration-200">
-                        <td className="px-4 py-3">
-                          <div className="flex items-center">
-                            <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                              <span className="text-white font-bold text-xs">
-                                {app.company.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
+                      <React.Fragment key={app.id}>
+                        <tr className="hover:bg-gray-50 transition-colors duration-200">
+                          <td className="px-4 py-3">
                             <div>
                               <div className="text-sm font-semibold text-gray-900">{app.company}</div>
                               {app.link && (
@@ -248,61 +247,82 @@ export default function DashboardClient({ initialApplications }: DashboardClient
                                   href={app.link}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-xs text-indigo-600 hover:text-indigo-800"
+                                  className="text-xs text-indigo-600 hover:text-indigo-800 cursor-pointer transition-colors"
                                 >
                                   Ver vaga →
                                 </a>
                               )}
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="text-sm text-gray-900 font-medium">{app.position}</div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span
-                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
-                              app.status === "Applied"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : app.status === "Interview"
-                                ? "bg-blue-100 text-blue-800"
-                                : app.status === "Offer"
-                                ? "bg-green-100 text-green-800"
-                                : app.status === "Rejected"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-gray-100 text-gray-800"
-                            }`}
-                          >
-                            {app.status === "Applied" && "📝"}
-                            {app.status === "Interview" && "🎯"}
-                            {app.status === "Offer" && "🎉"}
-                            {app.status === "Rejected" && "❌"}
-                            {" "}{app.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-xs text-gray-600">
-                          {new Date(app.created_at).toLocaleDateString("pt-BR", {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                          })}
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <Link href={`/edit/${app.id}`}>
-                              <button className="text-indigo-600 hover:text-indigo-800 font-medium text-xs transition-colors">
-                                ✏️ Editar
-                              </button>
-                            </Link>
-                            <button
-                              onClick={() => handleDelete(app.id)}
-                              className="text-red-600 hover:text-red-800 font-medium text-xs transition-colors"
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="text-sm text-gray-900 font-medium">{app.position}</div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                                app.status === "Applied"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : app.status === "Interview"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : app.status === "Offer"
+                                  ? "bg-green-100 text-green-800"
+                                  : app.status === "Rejected"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
                             >
-                              🗑️ Excluir
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
+                              {app.status === "Applied" && "📝"}
+                              {app.status === "Interview" && "🎯"}
+                              {app.status === "Offer" && "🎉"}
+                              {app.status === "Rejected" && "❌"}
+                              {" "}{app.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            {app.notes ? (
+                              <button
+                                onClick={() => setExpandedNotes(expandedNotes === app.id ? null : app.id)}
+                                className="text-xs text-gray-600 hover:text-gray-800 cursor-pointer transition-colors"
+                              >
+                                {expandedNotes === app.id ? "📝 Ocultar notas" : "📝 Ver notas"}
+                              </button>
+                            ) : (
+                              <span className="text-xs text-gray-400">Sem notas</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-xs text-gray-600">
+                            {new Date(app.created_at).toLocaleDateString("pt-BR", {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            })}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <Link href={`/edit/${app.id}`}>
+                                <button className="text-indigo-600 hover:text-indigo-800 font-medium text-xs transition-colors cursor-pointer">
+                                  ✏️ Editar
+                                </button>
+                              </Link>
+                              <button
+                                onClick={() => handleDelete(app.id)}
+                                className="text-red-600 hover:text-red-800 font-medium text-xs transition-colors cursor-pointer"
+                              >
+                                🗑️ Excluir
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        {expandedNotes === app.id && app.notes && (
+                          <tr key={`${app.id}-notes`}>
+                            <td colSpan={6} className="px-4 py-3 bg-gray-50">
+                              <div className="text-sm text-gray-700 whitespace-pre-wrap">
+                                {app.notes}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     ))}
                   </tbody>
                 </table>
