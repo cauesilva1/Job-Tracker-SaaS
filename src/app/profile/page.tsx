@@ -235,7 +235,7 @@ export default function ProfilePage() {
                 <Button
                   onClick={handleLogout}
                   variant="destructive"
-                  className="w-full"
+                  className="w-full flex items-center justify-center gap-6"
                 >
                   🚪 Fazer Logout
                 </Button>

@@ -1,3 +1,5 @@
+
+
 interface JobInfo {
   company?: string;
   position?: string;
@@ -311,3 +313,104 @@ export function isValidJobUrl(url: string): boolean {
     return false;
   }
 } 
+
+export async function extractJobDescription(url: string): Promise<string> {
+  try {
+    console.log('Tentando extrair descrição da vaga de:', url);
+    
+    // Para desenvolvimento, retornar uma descrição simulada
+    // Em produção, você pode implementar web scraping real
+    const domain = new URL(url).hostname;
+    
+    if (domain.includes('linkedin.com')) {
+      return `Vaga do LinkedIn - Desenvolvedor Full Stack
+
+REQUISITOS:
+- 3+ anos de experiência com React, Node.js e TypeScript
+- Conhecimento em AWS, Docker e Kubernetes
+- Experiência com metodologias ágeis
+- Graduação em Ciência da Computação ou áreas relacionadas
+
+RESPONSABILIDADES:
+- Desenvolver aplicações web escaláveis
+- Trabalhar em equipe multidisciplinar
+- Participar de code reviews e pair programming
+- Implementar boas práticas de desenvolvimento
+
+TECNOLOGIAS:
+- Frontend: React, TypeScript, HTML, CSS
+- Backend: Node.js, Express, TypeScript
+- Cloud: AWS, Docker, Kubernetes
+- Banco de dados: PostgreSQL, MongoDB
+- Ferramentas: Git, Jira, Confluence`;
+    } else if (domain.includes('indeed.com')) {
+      return `Vaga do Indeed - Desenvolvedor Full Stack
+
+REQUISITOS:
+- 2+ anos de experiência com desenvolvimento web
+- Conhecimento em JavaScript, React e Node.js
+- Experiência com APIs RESTful
+- Graduação em tecnologia da informação
+
+RESPONSABILIDADES:
+- Desenvolver e manter aplicações web
+- Colaborar com designers e product managers
+- Otimizar performance das aplicações
+- Implementar testes automatizados
+
+TECNOLOGIAS:
+- JavaScript, React, Node.js
+- HTML, CSS, SASS
+- APIs RESTful, GraphQL
+- Git, GitHub
+- Metodologias ágeis`;
+    } else if (domain.includes('glassdoor.com')) {
+      return `Vaga do Glassdoor - Desenvolvedor Full Stack
+
+REQUISITOS:
+- 4+ anos de experiência em desenvolvimento
+- Conhecimento avançado em React e Node.js
+- Experiência com microserviços
+- Graduação em engenharia de software
+
+RESPONSABILIDADES:
+- Arquitetar soluções escaláveis
+- Liderar projetos de desenvolvimento
+- Mentorar desenvolvedores júnior
+- Participar de decisões técnicas
+
+TECNOLOGIAS:
+- React, TypeScript, Node.js
+- Microserviços, Docker, Kubernetes
+- AWS, Azure, GCP
+- PostgreSQL, Redis, MongoDB
+- CI/CD, Jenkins, GitHub Actions`;
+    } else {
+      return `Vaga Genérica - Desenvolvedor Full Stack
+
+REQUISITOS:
+- Experiência com desenvolvimento web
+- Conhecimento em JavaScript e frameworks modernos
+- Capacidade de trabalhar em equipe
+- Formação em tecnologia da informação
+
+RESPONSABILIDADES:
+- Desenvolver aplicações web
+- Colaborar com a equipe
+- Manter código limpo e documentado
+- Participar de reuniões técnicas
+
+TECNOLOGIAS:
+- JavaScript, HTML, CSS
+- Frameworks modernos (React, Vue, Angular)
+- Node.js, Express
+- Git e controle de versão
+- Metodologias ágeis`;
+    }
+  } catch (error) {
+    console.error('Erro ao extrair descrição da vaga:', error);
+    return `Descrição da vaga não pôde ser extraída automaticamente de: ${url}`;
+  }
+}
+
+ 

@@ -3,10 +3,10 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Sidebar from "@/components/sidebar/Sidebar";
 import MobileNav from "@/components/sidebar/MobileNav";
-import AddJobForm from "@/components/forms/AddJobForm";
-import { Plus } from 'lucide-react';
+import ResumeAnalysisForm from '@/components/forms/ResumeAnalysisForm';
+import { Brain } from 'lucide-react';
 
-export default async function AddJobPage() {
+export default async function AnalyzeResumePage() {
   const supabase = createServerComponentClient({ cookies });
   
   const {
@@ -44,34 +44,31 @@ export default async function AddJobPage() {
             {/* Header centralizado */}
             <div className="mb-8 flex justify-center">
               <div className="text-center">
-                <div className="flex items-center justify-center gap-8 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                    <Plus className="w-6 h-6 text-white" />
+                <div className="flex items-center justify-center gap-8 mb-4 ">
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-600 rounded-xl flex items-center justify-center">
+                    <Brain className="w-6 h-6 text-white" />
                   </div>
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900">
-                      Adicionar Nova Candidatura
+                      Análise de Currículo com IA
                     </h1>
                     <p className="text-gray-600">
-                      Registre uma nova vaga
+                      IA + Compatibilidade
                     </p>
                   </div>
                 </div>
                 
                 <p className="text-gray-600 max-w-2xl mx-auto">
-                  Preencha os dados da vaga e acompanhe seu progresso. 
-                  Você pode extrair informações automaticamente do link da vaga.
+                  Faça upload do seu currículo e informe a URL da vaga. Nossa IA irá analisar 
+                  a compatibilidade e sugerir melhorias para aumentar suas chances de conseguir a vaga.
                 </p>
               </div>
             </div>
 
-            {/* Formulário */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <AddJobForm userId={session.user.id} />
-            </div>
+            <ResumeAnalysisForm />
           </div>
         </div>
       </div>
     </div>
   );
-}
+} 

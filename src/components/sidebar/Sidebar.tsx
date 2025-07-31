@@ -69,7 +69,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white p-6 flex flex-col justify-between shadow-2xl border-r border-slate-700 backdrop-blur-sm">
+    <aside className="w-64 h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white p-6 flex flex-col justify-between shadow-2xl border-r border-slate-700 backdrop-blur-sm">
       {/* Header com Logo */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-8">
@@ -153,6 +153,18 @@ export default function Sidebar() {
               <div>
                 <p className="text-sm font-medium text-white">Meu Perfil</p>
                 <p className="text-xs text-slate-400">Configurações</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/analyze-resume">
+            <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800/50 transition-all duration-200 group cursor-pointer border border-transparent hover:border-slate-700/50">
+              <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span className="text-white text-sm">📄</span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-white">Análise de Currículo</p>
+                <p className="text-xs text-slate-400">IA + Compatibilidade</p>
               </div>
             </div>
           </Link>
