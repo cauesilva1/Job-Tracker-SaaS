@@ -93,6 +93,31 @@ export default function MobileNav() {
 
             {/* Navigation */}
             <nav className="space-y-2 mb-6">
+
+            <Link href="/profile" onClick={() => setIsOpen(false)}>
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800/50 transition-all duration-200 group cursor-pointer border border-transparent hover:border-slate-700/50">
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span className="text-white text-sm">👤</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">Meu Perfil</p>
+                    <p className="text-xs text-slate-400">Configurações</p>
+                  </div>
+                </div>
+              </Link>
+
+              <Link href="/" onClick={() => setIsOpen(false)}>
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800/50 transition-all duration-200 group cursor-pointer border border-transparent hover:border-slate-700/50">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span className="text-white text-sm">📊</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">Dashboard</p>
+                    <p className="text-xs text-slate-400">Visão geral</p>
+                  </div>
+                </div>
+              </Link>
+
               <Link href="/add" onClick={() => setIsOpen(false)}>
                 <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800/50 transition-all duration-200 group cursor-pointer border border-transparent hover:border-slate-700/50">
                   <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -105,14 +130,26 @@ export default function MobileNav() {
                 </div>
               </Link>
 
-              <Link href="/profile" onClick={() => setIsOpen(false)}>
+              <Link href="/analyze-resume" onClick={() => setIsOpen(false)}>
                 <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800/50 transition-all duration-200 group cursor-pointer border border-transparent hover:border-slate-700/50">
-                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <span className="text-white text-sm">👤</span>
+                  <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-yellow-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span className="text-white text-sm">📄</span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-white">Meu Perfil</p>
-                    <p className="text-xs text-slate-400">Configurações</p>
+                    <p className="text-sm font-medium text-white">Análise de Currículo</p>
+                    <p className="text-xs text-slate-400">IA + Compatibilidade</p>
+                  </div>
+                </div>
+              </Link>
+
+              <Link href="/interview-prep" onClick={() => setIsOpen(false)}>
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800/50 transition-all duration-200 group cursor-pointer border border-transparent hover:border-slate-700/50">
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span className="text-white text-sm">🤖</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">Preparar Entrevista</p>
+                    <p className="text-xs text-slate-400">IA + Simulação</p>
                   </div>
                 </div>
               </Link>

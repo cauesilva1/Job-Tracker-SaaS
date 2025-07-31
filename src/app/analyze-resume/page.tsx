@@ -20,7 +20,7 @@ export default async function AnalyzeResumePage() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar - oculta em mobile */}
-      <div className="hidden md:block h-screen">
+      <div className="hidden md:block h-screen flex-shrink-0">
         <Sidebar />
       </div>
       

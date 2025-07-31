@@ -3,10 +3,10 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Sidebar from "@/components/sidebar/Sidebar";
 import MobileNav from "@/components/sidebar/MobileNav";
-import AddJobForm from "@/components/forms/AddJobForm";
-import { Plus } from 'lucide-react';
+import InterviewChat from "@/components/chat/InterviewChat";
+import { MessageCircle } from 'lucide-react';
 
-export default async function AddJobPage() {
+export default async function InterviewPrepPage() {
   const supabase = createServerComponentClient({ cookies });
   
   const {
@@ -40,38 +40,38 @@ export default async function AddJobPage() {
       {/* Main Content */}
       <div className="flex-1 md:ml-0 pt-16 md:pt-0 h-screen overflow-hidden">
         <div className="h-full overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-4 py-8 pb-16">
+          <div className="max-w-6xl mx-auto px-4 py-8 pb-16">
             {/* Header centralizado */}
             <div className="mb-8 flex justify-center">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-8 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                    <Plus className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
+                    <MessageCircle className="w-6 h-6 text-white" />
                   </div>
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900">
-                      Adicionar Nova Candidatura
+                      Preparação para Entrevistas
                     </h1>
                     <p className="text-gray-600">
-                      Registre uma nova vaga
+                      IA + Simulação Realista
                     </p>
                   </div>
                 </div>
                 
                 <p className="text-gray-600 max-w-2xl mx-auto">
-                  Preencha os dados da vaga e acompanhe seu progresso. 
-                  Você pode extrair informações automaticamente do link da vaga.
+                  Pratique entrevistas com nossa IA especializada. Escolha o tipo de entrevista, 
+                  nível de dificuldade e receba feedback em tempo real para melhorar suas respostas.
                 </p>
               </div>
             </div>
 
-            {/* Formulário */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <AddJobForm userId={session.user.id} />
+            {/* Chat Interface */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+              <InterviewChat userId={session.user.id} />
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
+} 
